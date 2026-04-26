@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scitex-linalg"
+version = "0.1.0"
+description = "Small linear-algebra helpers (distance, geometric median, cosine, nannorm) — standalone module from the SciTeX ecosystem"
+readme = "README.md"
+license = "AGPL-3.0-only"
+requires-python = ">=3.9"
+authors = [{name = "Yusuke Watanabe", email = "ywatanabe@scitex.ai"}]
+keywords = ["scitex", "linear-algebra", "distance", "geometric-median", "numpy", "torch"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "sympy",
+]
+
+[project.optional-dependencies]
+torch = [
+    "torch",
+    "geom-median",
+]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+docs = [
+    "sphinx>=7.0",
+    "sphinx-rtd-theme>=2.0",
+    "myst-parser>=2.0",
+    "sphinx-copybutton>=0.5",
+    "sphinx-autodoc-typehints>=1.25",
+]
+all = [
+    "scitex-linalg[torch]",
+    "scitex-linalg[dev]",
+    "scitex-linalg[docs]",
+]
+
+[project.urls]
+Homepage = "https://github.com/ywatanabe1989/scitex-linalg"
+Repository = "https://github.com/ywatanabe1989/scitex-linalg"
+Documentation = "https://scitex-linalg.readthedocs.io"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--disable-warnings"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = ["E501"]
