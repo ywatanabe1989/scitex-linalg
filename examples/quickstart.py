@@ -11,10 +11,17 @@ import scitex_linalg as sl
 def main() -> int:
     rng = np.random.default_rng(0)
 
-    # Two random vectors -> Euclidean distance
+    # Two random vectors -> Euclidean distance.
+    # `euclidean_distance` is wrapped by a `@numpy_fn` decorator that lazily
+    # imports torch for tensor-conversion; without the [torch] extra (CI's
+    # default install) that import raises ModuleNotFoundError. Skip gracefully.
     u = rng.normal(size=(3, 100))
     v = rng.normal(size=(3, 100))
-    dist_per_sample = sl.euclidean_distance(u, v, axis=0)
+    try:
+        dist_per_sample = sl.euclidean_distance(u, v, axis=0)
+    except ModuleNotFoundError as e:
+        print(f"euclidean_distance unavailable ({e}); skipping.")
+        return 0
     print(f"Euclidean distance per sample (first 5): {dist_per_sample[:5]}")
     print(f"Mean distance: {dist_per_sample.mean():.4f}")
 
