@@ -47,8 +47,6 @@ docs = [
 ]
 all = [
     "scitex-linalg[torch]",
-    "scitex-linalg[dev]",
-    "scitex-linalg[docs]",
 ]
 
 [project.urls]
