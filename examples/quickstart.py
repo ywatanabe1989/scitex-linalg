@@ -4,6 +4,7 @@ Demonstrates Euclidean distance and geometric median on small numpy arrays.
 """
 
 import numpy as np
+
 import scitex_linalg as sl
 
 
@@ -18,6 +19,11 @@ def main() -> int:
     print(f"Mean distance: {dist_per_sample.mean():.4f}")
 
     # Geometric median of a point cloud (robust centre)
+    # Requires the [torch] extra (torch + geom-median). Skip gracefully if absent.
+    if sl.geometric_median is None:
+        print("geometric_median unavailable (install scitex-linalg[torch]); skipping.")
+        return 0
+
     points = rng.normal(loc=[1.0, 2.0, -1.0], scale=0.5, size=(200, 3)).T
     gmed = sl.geometric_median(points, dim=-1)
     print(f"Geometric median (≈ centre): {np.round(gmed, 3)}")
