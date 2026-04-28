@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scitex-linalg"
-version = "0.1.1"
+version = "0.1.2"
 description = "Small linear-algebra helpers (distance, geometric median, cosine, nannorm) — standalone module from the SciTeX ecosystem"
 readme = "README.md"
 license = "AGPL-3.0-only"
@@ -57,6 +57,12 @@ Documentation = "https://scitex-linalg.readthedocs.io"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+scitex_linalg = ["_skills/**/*.md"]
+
+[project.entry-points."scitex_dev.skills"]
+scitex-linalg = "scitex_linalg"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
