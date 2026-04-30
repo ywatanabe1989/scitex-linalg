@@ -1,5 +1,7 @@
 """SciTeX linalg — small linear-algebra helpers (distance, geometric median, misc)."""
 
+from __future__ import annotations
+
 from ._distance import cdist, edist, euclidean_distance
 from ._misc import cosine, nannorm, rebase_a_vec, three_line_lengths_to_coords
 
@@ -20,6 +22,7 @@ try:
 except ImportError:  # pragma: no cover — only on ancient Pythons
     __version__ = "0.0.0+local"
 __all__ = [
+    "__version__",
     "euclidean_distance",
     "cdist",
     "edist",
