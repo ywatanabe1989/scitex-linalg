@@ -10,16 +10,33 @@
 [![License: AGPL v3](https://img.shields.io/badge/license-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 <!-- scitex-badges:end -->
 
-Small linear-algebra helpers extracted from the [SciTeX](https://github.com/ywatanabe1989/scitex-python) ecosystem as a standalone package.
+<p align="center">
+  <a href="https://scitex.ai">
+    <img src="docs/scitex-logo-blue-cropped.png" alt="SciTeX" width="400">
+  </a>
+</p>
 
-## Install
+<p align="center"><b>Small linear-algebra helpers — distances, NaN-aware norms, geometric median, vector projections.</b></p>
+
+<p align="center">
+  <a href="https://scitex-linalg.readthedocs.io/">Full Documentation</a> · <code>pip install scitex-linalg</code>
+</p>
+
+---
+
+## Installation
 
 ```bash
 pip install scitex-linalg            # core (numpy/scipy/sympy)
 pip install "scitex-linalg[torch]"   # + geometric_median (torch + geom-median)
 ```
 
-## API
+## 1 Interfaces
+
+<details open>
+<summary><strong>Python API</strong></summary>
+
+<br>
 
 ```python
 import scitex_linalg as sxl
@@ -34,6 +51,8 @@ sxl.three_line_lengths_to_coords(a, b, c) # triangle side lengths -> 2-D coords
 sxl.geometric_median(xx, dim=-1)          # torch geometric median (requires [torch] extra)
 ```
 
+</details>
+
 ## Status
 
 Standalone fork of `scitex.linalg` — intended to remain importable as
@@ -42,6 +61,27 @@ Standalone fork of `scitex.linalg` — intended to remain importable as
 to keep the package free of `scitex.*` runtime deps; when `scitex-decorators`
 is split out, those will be replaced with a direct dependency.
 
+## Part of SciTeX
+
+`scitex-linalg` is part of [**SciTeX**](https://scitex.ai). Install via
+the umbrella with `pip install scitex[linalg]` to use as
+`scitex.linalg` (Python).
+
+>Four Freedoms for Research
+>
+>0. The freedom to **run** your research anywhere — your machine, your terms.
+>1. The freedom to **study** how every step works — from raw data to final manuscript.
+>2. The freedom to **redistribute** your workflows, not just your papers.
+>3. The freedom to **modify** any module and share improvements with the community.
+>
+>AGPL-3.0 — because we believe research infrastructure deserves the same freedoms as the software it runs on.
+
 ## License
 
 AGPL-3.0-only (see [LICENSE](./LICENSE)).
+
+---
+
+<p align="center">
+  <a href="https://scitex.ai" target="_blank"><img src="docs/scitex-icon-navy-inverted.png" alt="SciTeX" width="40"/></a>
+</p>
