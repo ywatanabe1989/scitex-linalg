@@ -170,7 +170,6 @@ def to_torch(
             return new_data
 
         # Handle xarray
-        import xarray
 
         if (
             hasattr(data, "__class__")
@@ -207,7 +206,11 @@ def to_numpy(*args: _Any, return_fn: Callable = _return_if, **kwargs: _Any) -> _
     def _to_numpy(data: _Any) -> _Any:
         """Internal conversion function for various data types."""
         import pandas as pd
-        import torch
+
+        try:
+            import torch  # type: ignore[import-not-found]
+        except ImportError:
+            torch = None  # type: ignore[assignment]
 
         # Check for None
         if data is None:
@@ -221,8 +224,8 @@ def to_numpy(*args: _Any, return_fn: Callable = _return_if, **kwargs: _Any) -> _
         if isinstance(data, (pd.Series, pd.DataFrame)):
             return data.to_numpy().squeeze()
 
-        # Handle torch tensors
-        if isinstance(data, torch.Tensor):
+        # Handle torch tensors (only when torch is installed)
+        if torch is not None and isinstance(data, torch.Tensor):
             return data.detach().cpu().numpy()
 
         # Handle lists and tuples
