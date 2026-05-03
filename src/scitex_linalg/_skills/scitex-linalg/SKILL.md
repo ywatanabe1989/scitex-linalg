@@ -1,6 +1,10 @@
 ---
 name: scitex-linalg
-description: Small linear-algebra helpers — `cdist`, `edist`, `euclidean_distance`, `cosine`, `nannorm`, `rebase_a_vec`, `three_line_lengths_to_coords`, `geometric_median` (optional torch). Drop-in replacement for one-line scipy.spatial dependencies and bespoke geometric-median implementations.
+description: |
+  [WHAT] Small linear-algebra helpers.
+  [WHEN] Use when working with scitex-linalg APIs or when the user mentions scitex.linalg..
+  [HOW] `import scitex_linalg` for the Python API; see leaf skills for entry points.
+tags: [scitex-linalg]
 primary_interface: python
 interfaces:
   python: 2
@@ -10,8 +14,8 @@ interfaces:
   hook: 0
   http: 0
 canonical-location: scitex-linalg/src/scitex_linalg/_skills/scitex-linalg/SKILL.md
-tags: [scitex-linalg, scitex-package]
 ---
+
 
 > **Interfaces:** Python ⭐⭐ · CLI — · MCP — · Skills ⭐⭐ · Hook — · HTTP —
 
