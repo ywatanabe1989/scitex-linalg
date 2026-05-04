@@ -23,7 +23,8 @@ canonical-location: scitex-linalg/src/scitex_linalg/_skills/scitex-linalg/SKILL.
 
 Small linear-algebra helpers — `cdist`, `edist`, `euclidean_distance`, `cosine`, `nannorm`, `rebase_a_vec`, `three_line_lengths_to_coords`, `geometric_median` (optional torch). Drop-in replacement for one-line scipy.spatial dependencies and bespoke geometric-median implementations.
 
-See README.md and the package's public `__init__.py` for the full
-function list. This skill leaf exists so agents discover the package
-exists and roughly what shape it has — refer to the source for
-signatures.
+## Sub-skills
+
+- [01_installation.md](01_installation.md) — pip install + extras + verify
+- [02_quick-start.md](02_quick-start.md) — distances, cosine, geometric median
+- [03_python-api.md](03_python-api.md) — full public surface
