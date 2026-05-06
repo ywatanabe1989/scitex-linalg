@@ -34,10 +34,12 @@ torch = [
     "geom-median",
 ]
 dev = [
+    "geom-median",
     "pandas",
     "pytest",
     "pytest-cov",
     "ruff",
+    "torch",
 ]
 docs = [
     "sphinx>=7.0",
