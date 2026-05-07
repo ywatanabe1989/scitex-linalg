@@ -33,6 +33,20 @@ pip install scitex-linalg            # core (numpy/scipy/sympy)
 pip install "scitex-linalg[torch]"   # + geometric_median (torch + geom-median)
 ```
 
+## Architecture
+
+```
+scitex_linalg/
+├── _distance.py             ← euclidean_distance, cdist, edist, cosine
+├── _misc.py                 ← nannorm, rebase_a_vec, three_line_lengths_to_coords
+├── _geometric_median.py     ← torch geometric median (optional [torch] extra)
+├── _vendor_decorators/      ← vendored numpy_fn / torch_fn / wrap (no scitex.* runtime dep)
+└── _skills/                 ← agent-facing skill pages
+```
+
+Tiny single-purpose helpers. Pure numpy/scipy core; the geometric-median
+path opts into `torch` only when the `[torch]` extra is installed.
+
 ## 1 Interfaces
 
 <details open>
@@ -54,6 +68,39 @@ sxl.geometric_median(xx, dim=-1)          # torch geometric median (requires [to
 ```
 
 </details>
+
+## Demo
+
+```mermaid
+flowchart LR
+    A["u, v (np.ndarray)"] --> B["scitex_linalg.cdist"]
+    B --> C["pairwise distance matrix"]
+    A2["v with NaNs"] --> D["scitex_linalg.nannorm"]
+    D --> E["NaN-safe vector norm"]
+    A3["v, v_base"] --> F["scitex_linalg.rebase_a_vec"]
+    F --> G["projected coords"]
+    A4["xx (torch.Tensor)"] --> H["scitex_linalg.geometric_median"]
+    H --> I["robust median point"]
+```
+
+```python
+>>> import numpy as np, scitex_linalg as sxl
+>>> sxl.cosine(np.array([1, 0]), np.array([1, 1]))
+0.7071...
+>>> sxl.nannorm(np.array([3.0, np.nan, 4.0]))
+5.0
+```
+
+## Quick Start
+
+```python
+import scitex_linalg as sxl
+
+sxl.cdist(u, v)                # pairwise distances
+sxl.cosine(v1, v2)             # cosine similarity (NaN-safe)
+sxl.nannorm(v, axis=-1)        # NaN-aware norm
+sxl.rebase_a_vec(v, v_base)    # project v onto v_base basis
+```
 
 ## Status
 
