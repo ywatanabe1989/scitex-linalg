@@ -9,7 +9,7 @@
 <p align="center"><b>Small linear-algebra helpers — distances, NaN-aware norms, geometric median, vector projections.</b></p>
 
 <p align="center">
-  <a href="https://scitex-linalg.readthedocs.io/">Full Documentation</a> · <code>pip install scitex-linalg</code>
+  <a href="https://scitex-linalg.readthedocs.io/">Full Documentation</a> · <code>uv pip install scitex-linalg[all]</code>
 </p>
 
 <!-- scitex-badges:start -->
