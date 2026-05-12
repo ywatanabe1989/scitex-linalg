@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+from scitex_dev import try_import_optional
+
 from ._distance import cdist, edist, euclidean_distance
 from ._misc import cosine, nannorm, rebase_a_vec, three_line_lengths_to_coords
 
 # geometric_median requires torch + geom-median (optional extra: pip install
 # scitex-linalg[torch]). Lazy-load so bare install + import works.
-try:
-    from ._geometric_median import geometric_median
-except ImportError:
-    geometric_median = None
+geometric_median = try_import_optional(
+    "._geometric_median",
+    "geometric_median",
+    extra="torch",
+    pkg="scitex-linalg",
+    package=__name__,
+)
 
 try:
     from importlib.metadata import version as _v, PackageNotFoundError

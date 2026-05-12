@@ -1,0 +1,8 @@
+# scitex-dev local audit configuration for scitex-linalg.
+#
+# This file is tracked (see .gitignore exception) so CI sees the
+# same whitelist as local development.
+audit:
+  root-whitelist:
+    files:
+      - codecov.yml  # codecov repo config — must live at repo root

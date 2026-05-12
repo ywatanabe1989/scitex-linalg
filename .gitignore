@@ -18,3 +18,9 @@ docs/sphinx/_build/
 docs/sphinx/api/
 *.swp
 .DS_Store
+
+# scitex-dev local state — keep config.yaml tracked so CI matches local
+.scitex/*
+!.scitex/dev/
+.scitex/dev/*
+!.scitex/dev/config.yaml

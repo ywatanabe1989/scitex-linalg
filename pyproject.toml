@@ -26,6 +26,7 @@ dependencies = [
     "numpy",
     "scipy",
     "sympy",
+    "scitex-dev>=0.11.7",
 ]
 
 [project.optional-dependencies]
@@ -38,6 +39,7 @@ dev = [
     "pandas",
     "pytest",
     "pytest-cov",
+    "pytest-timeout",  # used by CI: pytest --timeout=120
     "ruff",
     "torch",
     "scitex-dev>=0.11.7",
@@ -70,6 +72,11 @@ scitex-linalg = "scitex_linalg"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--disable-warnings"]
+
+[tool.coverage.run]
+parallel = true
+source = ["scitex_linalg"]
+concurrency = ["multiprocessing", "thread"]
 
 [tool.ruff]
 target-version = "py39"
