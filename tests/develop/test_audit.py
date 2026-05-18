@@ -16,12 +16,18 @@ import shutil
 import pytest
 
 
-def test_audit_all_clean():
+def test_audit_all_for_scitex_linalg_reports_no_violations():
+    # Arrange
     if shutil.which("scitex-dev") is None:
-        pytest.skip(
-            "scitex-dev not installed — add `scitex-dev[cli-audit]` "
-            "to [project.optional-dependencies.dev]"
+        import pytest as _pt
+        _pt.importorskip(
+            "scitex_dev",
+            reason="scitex-dev not installed — add `scitex-dev[cli-audit]` "
+            "to [project.optional-dependencies.dev]",
         )
     from scitex_dev.testing import audit_all_for_package
 
-    audit_all_for_package('scitex-linalg')
+    # Act
+    result = audit_all_for_package('scitex-linalg')
+    # Assert
+    assert result is None or result == 0
