@@ -1,690 +1,339 @@
 #!/usr/bin/env python3
-# Time-stamp: "2025-06-11 04:06:00 (ywatanabe)"
-# File: ./scitex_repo/tests/scitex/linalg/test__geometric_median.py
+"""TQ-compliant tests for geometric_median.
 
-"""Comprehensive tests for geometric_median function."""
+No mocks — relies on the real `geom_median` library via the
+`[torch]` optional extra. Each test: ≥3 word-tokens after `test_`,
+single assertion, AAA markers.
+"""
+
+import math
 
 import pytest
 
 torch = pytest.importorskip("torch")
-import os
-import tempfile
-import warnings
-from unittest.mock import MagicMock, call, patch
+geom_median = pytest.importorskip("geom_median")
 
 import numpy as np
 
 
-class TestGeometricMedianBasic:
-    """Test basic functionality of geometric_median."""
-
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        """Set up test fixtures."""
-        # Set random seed for reproducibility
-        torch.manual_seed(42)
-        np.random.seed(42)
-
-    def test_import(self):
-        """Test that geometric_median can be imported."""
-        from scitex_linalg import geometric_median
-
-        assert callable(geometric_median)
-
-    def test_basic_1d(self):
-        """Test geometric median with 1D tensor."""
-        from scitex_linalg import geometric_median
-
-        # Simple 1D case
-        x = torch.tensor([1.0, 2.0, 3.0, 4.0, 5.0])
-
-        # Mock the compute_geometric_median function
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor(3.0)
-            mock_compute.return_value = mock_result
-
-            result = geometric_median(x)
-
-            # Check that compute_geometric_median was called
-            mock_compute.assert_called_once()
-            assert result == 3.0
-
-    def test_basic_2d(self):
-        """Test geometric median with 2D tensor."""
-        from scitex_linalg import geometric_median
-
-        # 2D tensor
-        x = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor([4.0, 5.0, 6.0])
-            mock_compute.return_value = mock_result
-
-            # Test with default dim=-1
-            result = geometric_median(x)
+# ---------------------------------------------------------------------------
+# Basic functionality
+# ---------------------------------------------------------------------------
 
-            # Verify the function was called with correct points
-            called_points = mock_compute.call_args[0][0]
-            assert len(called_points) == 3  # 3 columns
-
-    def test_basic_3d(self):
-        """Test geometric median with 3D tensor."""
-        from scitex_linalg import geometric_median
-
-        # 3D tensor (batch x features x time)
-        x = torch.randn(2, 4, 5)
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(2, 4)
-            mock_compute.return_value = mock_result
+def test_geometric_median_is_callable_from_package():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            result = geometric_median(x, dim=-1)
+    # Act
+    is_callable = callable(geometric_median)
+    # Assert
+    assert is_callable
 
-            # Check that points were extracted along last dimension
-            called_points = mock_compute.call_args[0][0]
-            assert len(called_points) == 5  # 5 time points
-
-
-class TestGeometricMedianDimensions:
-    """Test dimension handling in geometric_median."""
 
-    def test_positive_dim(self):
-        """Test with positive dimension indices."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_1d_per_column_returns_column_medians():
+    # Arrange
+    from scitex_linalg import geometric_median
+
+    x = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+    # Act
+    result = geometric_median(x, dim=-1)
+    # Assert
+    assert torch.allclose(result, torch.tensor([2.0, 5.0, 8.0]), atol=1e-3)
 
-        x = torch.randn(3, 4, 5)
 
-        # Test different positive dimensions
-        for dim in [0, 1, 2]:
-            with patch(
-                "scitex_linalg._geometric_median.compute_geometric_median"
-            ) as mock_compute:
-                mock_result = MagicMock()
-                expected_shape = list(x.shape)
-                expected_shape.pop(dim)
-                mock_result.median = torch.randn(*expected_shape)
-                mock_compute.return_value = mock_result
+def test_geometric_median_dim0_returns_centroid_along_first_axis():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-                result = geometric_median(x, dim=dim)
+    x = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+    # Act
+    result = geometric_median(x, dim=0)
+    # Assert
+    assert torch.allclose(result, torch.tensor([4.0, 5.0, 6.0]), atol=1e-3)
 
-                # Verify correct number of points
-                called_points = mock_compute.call_args[0][0]
-                assert len(called_points) == x.shape[dim]
 
-    def test_negative_dim(self):
-        """Test with negative dimension indices."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_3d_input_returns_2d_output_along_last_dim():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = torch.randn(3, 4, 5)
+    torch.manual_seed(42)
+    x = torch.randn(2, 3, 4)
+    # Act
+    result = geometric_median(x, dim=-1)
+    # Assert
+    assert result.shape == (2, 3)
 
-        # Test negative dimensions
-        for neg_dim, pos_dim in [(-1, 2), (-2, 1), (-3, 0)]:
-            with patch(
-                "scitex_linalg._geometric_median.compute_geometric_median"
-            ) as mock_compute:
-                mock_result = MagicMock()
-                mock_result.median = torch.randn(1)  # dummy
-                mock_compute.return_value = mock_result
 
-                # Should handle negative dimensions correctly
-                result1 = geometric_median(x, dim=neg_dim)
-                result2 = geometric_median(x, dim=pos_dim)
+def test_geometric_median_symmetric_circle_returns_near_origin():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-                # Both should extract same number of points
-                points1 = mock_compute.call_args_list[-2][0][0]
-                points2 = mock_compute.call_args_list[-1][0][0]
-                assert len(points1) == len(points2)
+    angles = torch.linspace(0, 2 * math.pi, 9, dtype=torch.float32)[:-1]
+    points = torch.stack([torch.cos(angles), torch.sin(angles)], dim=1)
+    # Act
+    result = geometric_median(points, dim=0)
+    # Assert
+    assert torch.allclose(result, torch.zeros(2), atol=1e-3)
 
-    def test_dim_out_of_range(self):
-        """Test with dimension index out of range.
 
-        Positive out-of-range dimension raises IndexError.
-        Negative dimensions may wrap due to tensor conversion in the implementation.
-        """
-        from scitex_linalg import geometric_median
+def test_geometric_median_single_point_along_dim_returns_that_point():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = torch.randn(3, 4, 5)
+    x = torch.tensor([[1.0], [2.0], [3.0]])
+    # Act
+    result = geometric_median(x, dim=1)
+    # Assert
+    assert torch.allclose(result, torch.tensor([1.0, 2.0, 3.0]))
 
-        # Positive out of range should raise IndexError
-        with pytest.raises(IndexError):
-            geometric_median(x, dim=3)  # Too large
 
+# ---------------------------------------------------------------------------
+# Dimension handling
+# ---------------------------------------------------------------------------
 
-class TestGeometricMedianDataTypes:
-    """Test different data types and tensor properties."""
 
-    def test_float32(self):
-        """Test with float32 tensors."""
-        from scitex_linalg import geometric_median
+@pytest.mark.parametrize("dim", [0, 1, 2])
+def test_geometric_median_positive_dim_returns_correct_shape(dim):
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = torch.randn(10, 5, dtype=torch.float32)
+    torch.manual_seed(0)
+    x = torch.randn(3, 4, 5)
+    expected = list(x.shape)
+    expected.pop(dim)
+    # Act
+    result = geometric_median(x, dim=dim)
+    # Assert
+    assert tuple(result.shape) == tuple(expected)
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10, dtype=torch.float32)
-            mock_compute.return_value = mock_result
 
-            result = geometric_median(x)
+@pytest.mark.parametrize("neg_dim,pos_dim", [(-1, 2), (-2, 1), (-3, 0)])
+def test_geometric_median_negative_dim_matches_positive_dim_shape(
+    neg_dim, pos_dim
+):
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            # Points should maintain dtype
-            called_points = mock_compute.call_args[0][0]
-            assert all(p.dtype == torch.float32 for p in called_points)
+    torch.manual_seed(1)
+    x = torch.randn(3, 4, 5)
+    r_pos = geometric_median(x, dim=pos_dim)
+    # Act
+    r_neg = geometric_median(x, dim=neg_dim)
+    # Assert
+    assert r_neg.shape == r_pos.shape
 
-    def test_float64(self):
-        """Test with float64 tensors."""
-        from scitex_linalg import geometric_median
 
-        x = torch.randn(10, 5, dtype=torch.float64)
+def test_geometric_median_dim_out_of_range_raises_index_error():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10, dtype=torch.float64)
-            mock_compute.return_value = mock_result
+    x = torch.randn(3, 4, 5)
+    # Act
+    ctx = pytest.raises(IndexError)
+    # Assert
+    with ctx:
+        geometric_median(x, dim=3)
 
-            result = geometric_median(x)
 
-            # Points should maintain dtype
-            called_points = mock_compute.call_args[0][0]
-            assert all(p.dtype == torch.float64 for p in called_points)
+# ---------------------------------------------------------------------------
+# Data types
+# ---------------------------------------------------------------------------
 
-    def test_gpu_tensor(self):
-        """Test with GPU tensors if available."""
-        from scitex_linalg import geometric_median
 
-        if not torch.cuda.is_available():
-            pytest.skip("CUDA not available")
+def test_geometric_median_float32_input_returns_float32_output():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = torch.randn(10, 5).cuda()
+    torch.manual_seed(2)
+    x = torch.randn(10, 5, dtype=torch.float32)
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert result.dtype == torch.float32
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10).cuda()
-            mock_compute.return_value = mock_result
 
-            result = geometric_median(x)
+def test_geometric_median_float64_input_returns_float64_output():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            # Points should be on same device
-            called_points = mock_compute.call_args[0][0]
-            assert all(p.is_cuda for p in called_points)
+    torch.manual_seed(3)
+    x = torch.randn(10, 5, dtype=torch.float64)
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert result.dtype == torch.float64
 
-    def test_requires_grad(self):
-        """Test with tensors that require gradients."""
-        from scitex_linalg import geometric_median
 
-        x = torch.randn(10, 5, requires_grad=True)
+def test_geometric_median_requires_grad_input_returns_grad_tensor():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10)
-            mock_compute.return_value = mock_result
+    torch.manual_seed(4)
+    x = torch.randn(10, 5, requires_grad=True)
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert result.requires_grad
 
-            result = geometric_median(x)
 
-            # Gradient requirement should be preserved
-            called_points = mock_compute.call_args[0][0]
-            assert all(p.requires_grad for p in called_points)
+# ---------------------------------------------------------------------------
+# @torch_fn decorator — input type handling
+# ---------------------------------------------------------------------------
 
 
-class TestGeometricMedianDecorator:
-    """Test the @torch_fn decorator behavior."""
+def test_geometric_median_numpy_input_returns_numpy_array():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-    def test_numpy_input(self):
-        """Test that numpy arrays are converted to tensors."""
-        from scitex_linalg import geometric_median
+    rng = np.random.default_rng(0)
+    x = rng.standard_normal((10, 5))
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert isinstance(result, np.ndarray)
 
-        x = np.random.randn(10, 5)
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10)
-            mock_compute.return_value = mock_result
+def test_geometric_median_list_input_returns_length_two_result():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            # Should handle numpy input due to @torch_fn decorator
-            result = geometric_median(x)
+    x = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert len(result) == 2
 
-            # Verify conversion happened
-            called_points = mock_compute.call_args[0][0]
-            assert all(isinstance(p, torch.Tensor) for p in called_points)
 
-    def test_list_input(self):
-        """Test that lists are converted to tensors."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_2d_input_returns_1d_output_by_default():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+    torch.manual_seed(5)
+    x = torch.randn(10, 5)
+    # Act
+    result = geometric_median(x)
+    # Assert
+    assert result.ndim == 1
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor([2.5, 5.0])
-            mock_compute.return_value = mock_result
 
-            # Should handle list input due to @torch_fn decorator
-            result = geometric_median(x)
+# ---------------------------------------------------------------------------
+# Edge cases
+# ---------------------------------------------------------------------------
 
-            # Verify conversion happened
-            called_points = mock_compute.call_args[0][0]
-            assert all(isinstance(p, torch.Tensor) for p in called_points)
 
-    def test_mixed_device_handling(self):
-        """Test handling of tensors on different devices."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_empty_tensor_raises_index_error():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        if not torch.cuda.is_available():
-            pytest.skip("CUDA not available")
+    x = torch.tensor([])
+    # Act
+    ctx = pytest.raises(IndexError)
+    # Assert
+    with ctx:
+        geometric_median(x)
 
-        # CPU tensor
-        x_cpu = torch.randn(10, 5)
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10)
-            mock_compute.return_value = mock_result
+def test_geometric_median_does_not_mutate_input_tensor():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            # Should work with CPU tensor
-            result = geometric_median(x_cpu)
+    torch.manual_seed(6)
+    x = torch.randn(10, 5)
+    snapshot = x.clone()
+    # Act
+    geometric_median(x)
+    # Assert
+    assert torch.equal(x, snapshot)
 
-            # All points should be on same device
-            called_points = mock_compute.call_args[0][0]
-            devices = [p.device for p in called_points]
-            assert all(d == devices[0] for d in devices)
 
+# ---------------------------------------------------------------------------
+# Large-scale
+# ---------------------------------------------------------------------------
 
-class TestGeometricMedianEdgeCases:
-    """Test edge cases and special inputs."""
 
-    def test_single_point(self):
-        """Test with single point (no median to compute)."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_large_tensor_returns_correct_output_shape():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-        x = torch.tensor([[1.0], [2.0], [3.0]])  # 3x1 tensor
+    torch.manual_seed(7)
+    x = torch.randn(100, 1000)
+    # Act
+    result = geometric_median(x, dim=1)
+    # Assert
+    assert result.shape == (100,)
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor([1.0, 2.0, 3.0])
-            mock_compute.return_value = mock_result
 
-            result = geometric_median(x, dim=1)
+def test_geometric_median_5d_input_along_last_dim_returns_4d_output():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-            # Should still call with single point
-            called_points = mock_compute.call_args[0][0]
-            assert len(called_points) == 1
+    torch.manual_seed(8)
+    x = torch.randn(2, 3, 4, 5, 6)
+    # Act
+    result = geometric_median(x, dim=-1)
+    # Assert
+    assert result.shape == (2, 3, 4, 5)
 
-    def test_empty_tensor(self):
-        """Test with empty tensor.
 
-        Empty tensor causes IndexError during point extraction.
-        """
-        from scitex_linalg import geometric_median
+# ---------------------------------------------------------------------------
+# Integration with real geom_median library
+# ---------------------------------------------------------------------------
 
-        x = torch.tensor([])
 
-        # Empty tensor raises IndexError during the loop
-        with pytest.raises(IndexError):
-            geometric_median(x)
+def test_geometric_median_1d_sample_returns_close_to_median_value():
+    # Arrange
+    from scitex_linalg import geometric_median
 
-    def test_nan_values(self):
-        """Test with NaN values."""
-        from scitex_linalg import geometric_median
+    x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]])
+    # Act
+    result = geometric_median(x, dim=0)
+    # Assert
+    assert torch.allclose(result, torch.tensor([3.0]), atol=0.1)
 
-        x = torch.tensor([[1.0, 2.0, float("nan")], [4.0, 5.0, 6.0]])
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor([float("nan"), 5.0])
-            mock_compute.return_value = mock_result
+# ---------------------------------------------------------------------------
+# Signature / API
+# ---------------------------------------------------------------------------
 
-            # Should pass through to compute_geometric_median
-            result = geometric_median(x)
 
-            # NaN handling is up to compute_geometric_median
-            called_points = mock_compute.call_args[0][0]
-            assert any(torch.isnan(p).any() for p in called_points)
+def test_geometric_median_signature_exposes_xx_parameter():
+    # Arrange
+    import inspect
 
-    def test_inf_values(self):
-        """Test with infinite values."""
-        from scitex_linalg import geometric_median
+    from scitex_linalg import geometric_median
 
-        x = torch.tensor([[1.0, 2.0, float("inf")], [4.0, 5.0, 6.0]])
+    # Act
+    params = list(inspect.signature(geometric_median).parameters.keys())
+    # Assert
+    assert "xx" in params
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.tensor([float("inf"), 5.0])
-            mock_compute.return_value = mock_result
 
-            # Should pass through to compute_geometric_median
-            result = geometric_median(x)
+def test_geometric_median_signature_exposes_dim_parameter():
+    # Arrange
+    import inspect
 
-            # Inf handling is up to compute_geometric_median
-            called_points = mock_compute.call_args[0][0]
-            assert any(torch.isinf(p).any() for p in called_points)
+    from scitex_linalg import geometric_median
 
+    # Act
+    params = list(inspect.signature(geometric_median).parameters.keys())
+    # Assert
+    assert "dim" in params
 
-class TestGeometricMedianLargeScale:
-    """Test with large-scale data."""
 
-    def test_large_tensor(self):
-        """Test with large tensors."""
-        from scitex_linalg import geometric_median
+def test_geometric_median_dim_parameter_defaults_to_negative_one():
+    # Arrange
+    import inspect
 
-        # Large tensor
-        x = torch.randn(100, 1000)
+    from scitex_linalg import geometric_median
 
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(100)
-            mock_compute.return_value = mock_result
-
-            result = geometric_median(x, dim=1)
-
-            # Should extract 1000 points
-            called_points = mock_compute.call_args[0][0]
-            assert len(called_points) == 1000
-
-    def test_high_dimensional(self):
-        """Test with high-dimensional tensors."""
-        from scitex_linalg import geometric_median
-
-        # 5D tensor
-        x = torch.randn(2, 3, 4, 5, 6)
-
-        for dim in range(5):
-            with patch(
-                "scitex_linalg._geometric_median.compute_geometric_median"
-            ) as mock_compute:
-                mock_result = MagicMock()
-                mock_result.median = torch.randn(1)  # dummy
-                mock_compute.return_value = mock_result
-
-                result = geometric_median(x, dim=dim)
-
-                # Should handle all dimensions correctly
-                called_points = mock_compute.call_args[0][0]
-                assert len(called_points) == x.shape[dim]
-
-
-class TestGeometricMedianIntegration:
-    """Test integration with real compute_geometric_median if available."""
-
-    def test_with_real_implementation(self):
-        """Test with actual geom_median library if available."""
-        try:
-            from geom_median.torch import compute_geometric_median as real_compute
-
-            from scitex_linalg import geometric_median
-        except ImportError:
-            pytest.skip("geom_median not available")
-
-        # Simple test case where geometric median is known
-        # For 1D case, geometric median equals regular median
-        x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]])
-
-        result = geometric_median(x, dim=0)
-
-        # Should be close to median value (3.0)
-        assert torch.allclose(result, torch.tensor([3.0]), atol=0.1)
-
-    def test_convergence_properties(self):
-        """Test convergence properties of geometric median."""
-        from scitex_linalg import geometric_median
-
-        # Create points where geometric median should be at origin
-        angles = torch.linspace(0, 2 * np.pi, 8, dtype=torch.float32)[:-1]
-        x = torch.stack([torch.cos(angles), torch.sin(angles)], dim=1)
-
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            # Geometric median of symmetric points around origin should be near origin
-            mock_result.median = torch.tensor([0.0, 0.0])
-            mock_compute.return_value = mock_result
-
-            result = geometric_median(x, dim=0)
-
-            # Result should be near origin
-            assert torch.allclose(result, torch.zeros(2), atol=0.1)
-
-
-class TestGeometricMedianDocstring:
-    """Test function documentation and signature."""
-
-    def test_has_docstring(self):
-        """Test that function has a docstring.
-
-        Note: The @torch_fn decorator may not preserve docstrings.
-        This test documents the current behavior.
-        """
-        from scitex_linalg import geometric_median
-
-        # The @torch_fn decorator may strip docstrings
-        # This is acceptable as long as the function works correctly
-        # If docstring is None, just verify the function is callable
-        if geometric_median.__doc__ is None:
-            assert callable(geometric_median)
-        else:
-            assert len(geometric_median.__doc__) > 0
-
-    def test_function_signature(self):
-        """Test function signature."""
-        import inspect
-
-        from scitex_linalg import geometric_median
-
-        sig = inspect.signature(geometric_median)
-        params = list(sig.parameters.keys())
-
-        assert "xx" in params
-        assert "dim" in params
-
-        # Check default values
-        assert sig.parameters["dim"].default == -1
-
-    def test_torch_fn_decorator_applied(self):
-        """Test that torch_fn decorator is properly applied."""
-        from scitex_linalg import geometric_median
-
-        # Should have decorator attributes or wrapped function
-        # The exact attributes depend on decorator implementation
-        assert callable(geometric_median)
-
-
-class TestGeometricMedianPerformance:
-    """Test performance considerations."""
-
-    def test_memory_efficiency(self):
-        """Test memory usage patterns."""
-        from scitex_linalg import geometric_median
-
-        x = torch.randn(100, 100)
-
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(100)
-            mock_compute.return_value = mock_result
-
-            # Function creates a list of points
-            result = geometric_median(x)
-
-            # Should create list of 100 points (for dim=-1)
-            called_points = mock_compute.call_args[0][0]
-            assert isinstance(called_points, list)
-            assert len(called_points) == 100
-
-    def test_no_unnecessary_copies(self):
-        """Test that function doesn't make unnecessary copies."""
-        from scitex_linalg import geometric_median
-
-        x = torch.randn(10, 5)
-        x_ptr = x.data_ptr()
-
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(10)
-            mock_compute.return_value = mock_result
-
-            result = geometric_median(x)
-
-            # Original tensor should not be modified
-            assert x.data_ptr() == x_ptr
-
-            # Slices should share memory with original
-            called_points = mock_compute.call_args[0][0]
-            # Note: Slicing creates views, not copies in PyTorch
-
-
-class TestGeometricMedianErrorHandling:
-    """Test error handling and edge cases."""
-
-    def test_dimension_mismatch_handling(self):
-        """Test handling of dimension mismatches."""
-        from scitex_linalg import geometric_median
-
-        x = torch.randn(3, 4, 5)
-
-        # The current implementation has a bug where it converts dim to tensor
-        # This should be tested and potentially fixed
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_result = MagicMock()
-            mock_result.median = torch.randn(1)
-            mock_compute.return_value = mock_result
-
-            # Test the current behavior
-            result = geometric_median(x, dim=-1)
-
-            # The dimension conversion to tensor seems incorrect
-            # This test documents current behavior
-
-    def test_compute_geometric_median_failure(self):
-        """Test handling when compute_geometric_median fails."""
-        from scitex_linalg import geometric_median
-
-        x = torch.randn(10, 5)
-
-        with patch(
-            "scitex_linalg._geometric_median.compute_geometric_median"
-        ) as mock_compute:
-            mock_compute.side_effect = RuntimeError("Computation failed")
-
-            with pytest.raises(RuntimeError):
-                geometric_median(x)
+    # Act
+    default = inspect.signature(geometric_median).parameters["dim"].default
+    # Assert
+    assert default == -1
 
 
 if __name__ == "__main__":
     import os
 
-    import pytest
-
     pytest.main([os.path.abspath(__file__)])
-
-# --------------------------------------------------------------------------------
-# Start of Source Code from: /home/ywatanabe/proj/scitex-code/src/scitex/linalg/_geometric_median.py
-# --------------------------------------------------------------------------------
-# #!./env/bin/python3
-# # -*- coding: utf-8 -*-
-# # Time-stamp: "2024-09-26 19:41:01 (ywatanabe)"
-# # /home/ywatanabe/proj/scitex/src/scitex/linalg/_geometric_median.py
-#
-#
-# """
-# This script does XYZ.
-# """
-#
-# import torch
-# from geom_median.torch import compute_geometric_median
-# from scitex.decorators import torch_fn
-#
-# # @torch_fn
-# # def geometric_median(xx, dim=-1):
-# #     indi = [slice(None) for _ in range(xx.ndim)]
-# #     indi[dim] = slice(None)
-# #     xx[indi]  # how can I loop over the designated dim??
-#
-# #     return compute_geometric_median(xx).median
-#
-#
-# @torch_fn
-# def geometric_median(xx, dim=-1):
-#     # Ensure dim is a positive index
-#     if dim < 0:
-#         dim = xx.ndim + dim
-#         dim = torch.tensor(dim).to(xx.device)
-#
-#     # Create a list of slices to access all elements along each dimension
-#     indi = [slice(None)] * xx.ndim
-#
-#     # Get the size of the dimension we want to loop over
-#     dim_size = xx.shape[dim]
-#
-#     points = []
-#     # Loop over each index in the specified dimension
-#     for i in range(dim_size):
-#         indi[dim] = i
-#         # Set the slice for the current index in the target dimension
-#         slice_data = xx[tuple(indi)]  # Extract the data for the current index
-#         points.append(slice_data)
-#
-#     out = compute_geometric_median(points).median
-#
-#     return out
-#
-#
-# if __name__ == "__main__":
-#     import sys
-#     import matplotlib.pyplot as plt
-#     import scitex
-#
-#     # # Argument Parser
-#     # import argparse
-#     # parser = argparse.ArgumentParser(description='')
-#     # parser.add_argument('--var', '-v', type=int, default=1, help='')
-#     # parser.add_argument('--flag', '-f', action='store_true', default=False, help='')
-#     # args = parser.parse_args()
-#
-#     # Main
-#     CONFIG, sys.stdout, sys.stderr, plt, CC = scitex.session.start(
-#         sys, plt, verbose=False
-#     )
-#     main()
-#     scitex.session.close(CONFIG, verbose=False, notify=False)
-#
-# # EOF
-
-# --------------------------------------------------------------------------------
-# End of Source Code from: /home/ywatanabe/proj/scitex-code/src/scitex/linalg/_geometric_median.py
-# --------------------------------------------------------------------------------

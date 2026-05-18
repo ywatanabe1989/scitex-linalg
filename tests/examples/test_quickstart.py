@@ -15,15 +15,27 @@ from pathlib import Path
 EXAMPLE = Path(__file__).resolve().parents[2] / "examples" / "quickstart.py"
 
 
-def test_quickstart_runs(tmp_path: Path) -> None:
-    assert EXAMPLE.is_file(), f"missing example: {EXAMPLE}"
+def test_quickstart_example_file_exists_on_disk() -> None:
+    # Arrange
+    example = EXAMPLE
+    # Act
+    is_file = example.is_file()
+    # Assert
+    assert is_file, f"missing example: {example}"
+
+
+def test_quickstart_runs_to_completion_with_zero_exit_code(tmp_path: Path) -> None:
+    # Arrange
+    cmd = [sys.executable, str(EXAMPLE)]
+    # Act
     result = subprocess.run(
-        [sys.executable, str(EXAMPLE)],
+        cmd,
         cwd=tmp_path,
         capture_output=True,
         text=True,
         timeout=60,
     )
+    # Assert
     assert result.returncode == 0, (
         f"quickstart.py failed (rc={result.returncode})\n"
         f"--- stdout ---\n{result.stdout}\n"
