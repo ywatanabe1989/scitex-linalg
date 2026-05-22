@@ -1,6 +1,0 @@
-﻿scitex\_linalg
-==============
-
-.. automodule:: scitex_linalg
-
-   
