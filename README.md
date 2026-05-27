@@ -36,8 +36,8 @@ pip install "scitex-linalg[torch]"   # + geometric_median (torch + geom-median)
 
 ```
 scitex_linalg/
-├── _distance.py             ← euclidean_distance, cdist, edist, cosine
-├── _misc.py                 ← nannorm, rebase_a_vec, three_line_lengths_to_coords
+├── _distance.py             ← euclidean_distance, cdist, edist
+├── _misc.py                 ← cosine, nannorm, rebase_a_vec, three_line_lengths_to_coords
 ├── _geometric_median.py     ← torch geometric median (optional [torch] extra)
 ├── _vendor_decorators/      ← vendored numpy_fn / torch_fn / wrap (no scitex.* runtime dep)
 └── _skills/                 ← agent-facing skill pages
@@ -58,7 +58,7 @@ import scitex_linalg as sxl
 
 sxl.euclidean_distance(u, v, axis=0)      # element-wise Euclidean distance
 sxl.cdist(u, v)                           # pairwise distances
-sxl.edist(u, v)                           # alias for cdist
+sxl.edist(u, v)                           # alias for euclidean_distance
 sxl.cosine(v1, v2)                        # cosine similarity (NaN-safe)
 sxl.nannorm(v, axis=-1)                   # NaN-aware vector norm
 sxl.rebase_a_vec(v, v_base)               # project v onto v_base basis
