@@ -6,6 +6,18 @@ from scitex_dev import try_import_optional
 
 from ._distance import cdist, edist, euclidean_distance
 from ._misc import cosine, nannorm, rebase_a_vec, three_line_lengths_to_coords
+from ._torch_numerics import (
+    apply_to,
+    nanargmax,
+    nanargmin,
+    nancumprod,
+    nancumsum,
+    nanmax,
+    nanmin,
+    nanprod,
+    nanstd,
+    nanvar,
+)
 
 # geometric_median requires torch + geom-median (optional extra: pip install
 # scitex-linalg[torch]). Lazy-load so bare install + import works.
@@ -18,7 +30,9 @@ geometric_median = try_import_optional(
 )
 
 try:
-    from importlib.metadata import version as _v, PackageNotFoundError
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as _v
+
     try:
         __version__ = _v("scitex-linalg")
     except PackageNotFoundError:
@@ -36,4 +50,14 @@ __all__ = [
     "nannorm",
     "rebase_a_vec",
     "three_line_lengths_to_coords",
+    "apply_to",
+    "nanmax",
+    "nanmin",
+    "nanvar",
+    "nanstd",
+    "nanprod",
+    "nancumsum",
+    "nancumprod",
+    "nanargmax",
+    "nanargmin",
 ]
