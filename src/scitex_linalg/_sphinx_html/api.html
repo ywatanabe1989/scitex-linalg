@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; scitex-linalg 0.1.4 documentation</title>
+  <title>API &mdash; scitex-linalg 0.1.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=fd825880"></script>
+      <script src="_static/documentation_options.js?v=59fadc99"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -23,7 +23,6 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="scitex_linalg" href="api/scitex_linalg.html" />
     <link rel="prev" title="scitex-linalg" href="index.html" /> 
 </head>
 
@@ -56,11 +55,18 @@
 <li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nannorm"><code class="docutils literal notranslate"><span class="pre">nannorm()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.rebase_a_vec"><code class="docutils literal notranslate"><span class="pre">rebase_a_vec()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.three_line_lengths_to_coords"><code class="docutils literal notranslate"><span class="pre">three_line_lengths_to_coords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.apply_to"><code class="docutils literal notranslate"><span class="pre">apply_to()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanmax"><code class="docutils literal notranslate"><span class="pre">nanmax()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanmin"><code class="docutils literal notranslate"><span class="pre">nanmin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanvar"><code class="docutils literal notranslate"><span class="pre">nanvar()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanstd"><code class="docutils literal notranslate"><span class="pre">nanstd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanprod"><code class="docutils literal notranslate"><span class="pre">nanprod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nancumsum"><code class="docutils literal notranslate"><span class="pre">nancumsum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nancumprod"><code class="docutils literal notranslate"><span class="pre">nancumprod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanargmax"><code class="docutils literal notranslate"><span class="pre">nanargmax()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scitex_linalg.nanargmin"><code class="docutils literal notranslate"><span class="pre">nanargmin()</span></code></a></li>
 </ul>
 </li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="api/scitex_linalg.html">scitex_linalg</a></li>
 </ul>
 
         </div>
@@ -389,6 +395,86 @@ cube:</p>
 print(O, A, B)</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.apply_to">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">apply_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#apply_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.apply_to" title="Link to this definition"></a></dt>
+<dd><p>Apply <code class="docutils literal notranslate"><span class="pre">fn</span></code> to each slice of <code class="docutils literal notranslate"><span class="pre">x</span></code> along <code class="docutils literal notranslate"><span class="pre">dim</span></code> via reshape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fn</strong> (<em>callable</em>) – Reduction applied to each 1-D slice taken along <code class="docutils literal notranslate"><span class="pre">dim</span></code>.</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.12)"><em>torch.Tensor</em></a>) – Input tensor.</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Dimension along which <code class="docutils literal notranslate"><span class="pre">fn</span></code> is applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result with the reduced dimension restored to its original position.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.12)">torch.Tensor</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">apply_to</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># (2, 1, 4)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanmax">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanmax" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring maximum reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanmin">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanmin" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring minimum reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanvar">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanvar" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring variance reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanstd">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanstd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanstd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanstd" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring standard deviation over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanprod">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanprod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanprod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanprod" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring product reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nancumsum">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nancumsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nancumsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nancumsum" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring cumulative sum over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nancumprod">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nancumprod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nancumprod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nancumprod" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring cumulative product over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanargmax">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanargmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanargmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanargmax" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring argmax reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="scitex_linalg.nanargmin">
+<span class="sig-prename descclassname"><span class="pre">scitex_linalg.</span></span><span class="sig-name descname"><span class="pre">nanargmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scitex_linalg/_torch_numerics.html#nanargmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#scitex_linalg.nanargmin" title="Link to this definition"></a></dt>
+<dd><p>NaN-ignoring argmin reduction over <code class="docutils literal notranslate"><span class="pre">tensor</span></code>.</p>
+</dd></dl>
+
 </section>
 
 
@@ -396,7 +482,6 @@ print(O, A, B)</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="scitex-linalg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api/scitex_linalg.html" class="btn btn-neutral float-right" title="scitex_linalg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

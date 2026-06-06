@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>scitex_linalg._misc &mdash; scitex-linalg 0.1.4 documentation</title>
+  <title>scitex_linalg._misc &mdash; scitex-linalg 0.1.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fd825880"></script>
+      <script src="../../_static/documentation_options.js?v=59fadc99"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -45,9 +45,6 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/scitex_linalg.html">scitex_linalg</a></li>
 </ul>
 
         </div>
@@ -85,7 +82,7 @@
 
 
 <div class="viewcode-block" id="cosine">
-<a class="viewcode-back" href="../../api/scitex_linalg.html#scitex_linalg.cosine">[docs]</a>
+<a class="viewcode-back" href="../../api.html#scitex_linalg.cosine">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cosine</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -96,7 +93,7 @@
 
 
 <div class="viewcode-block" id="nannorm">
-<a class="viewcode-back" href="../../api/scitex_linalg.html#scitex_linalg.nannorm">[docs]</a>
+<a class="viewcode-back" href="../../api.html#scitex_linalg.nannorm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nannorm</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -106,7 +103,7 @@
 
 
 <div class="viewcode-block" id="rebase_a_vec">
-<a class="viewcode-back" href="../../api/scitex_linalg.html#scitex_linalg.rebase_a_vec">[docs]</a>
+<a class="viewcode-back" href="../../api.html#scitex_linalg.rebase_a_vec">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rebase_a_vec</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v_base</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">production_vector</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -125,7 +122,7 @@
 
 
 <div class="viewcode-block" id="three_line_lengths_to_coords">
-<a class="viewcode-back" href="../../api/scitex_linalg.html#scitex_linalg.three_line_lengths_to_coords">[docs]</a>
+<a class="viewcode-back" href="../../api.html#scitex_linalg.three_line_lengths_to_coords">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">three_line_lengths_to_coords</span><span class="p">(</span><span class="n">aa</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    O, A, B = three_line_lengths_to_coords(2, np.sqrt(3), 1)</span>
